@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Video Quiz</title>
+    <style>
+        /* Style for the video container and quiz overlay */
+        #videoContainer {
+            position: relative;
+            width: 640px;
+            height: 360px;
+        }
+        #quizOverlay, #feedbackOverlay {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            text-align: center;
+            padding-top: 20%;
+            font-size: 1.2rem;
+        }
+        #quizOverlay button, #feedbackOverlay button {
+            margin-top: 20px;
+            padding: 10px;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+        #feedbackImage {
+            width: 200px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="videoContainer">
+    <!-- Local video file -->
+    <video id="myVideo" width="640" height="360" controls>
+        <source src="1.mp4" type="video/mp4"> <!-- Video file set to 1.mp4 -->
+        Your browser does not support the video tag.
+    </video>
+
+    <!-- Quiz Overlay -->
+    <div id="quizOverlay">
+        <p>Quiz Question: What is the capital of France?</p>
+        <button onclick="submitAnswer('Paris')">Paris</button>
+        <button onclick="submitAnswer('London')">London</button>
+    </div>
+
+    <!-- Feedback Overlay -->
+    <div id="feedbackOverlay">
+        <img id="feedbackImage" src="" alt="Feedback">
+        <p id="feedbackText"></p>
+        <button id="continueButton" onclick="continueVideo()">Continue Video</button>
+        <button id="retryButton" onclick="retryQuiz()">Play Again</button>
+    </div>
+</div>
+
+<script>
+    // Define quiz time in seconds (2 minutes = 120 seconds)
+    const quizTime = 120;
+    let quizAnswered = false;
+
+    // Video and overlay elements
+    const video = document.getElementById('myVideo');
+    const quizOverlay = document.getElementById('quizOverlay');
+    const feedbackOverlay = document.getElementById('feedbackOverlay');
+    const feedbackImage = document.getElementById('feedbackImage');
+    const feedbackText = document.getElementById('feedbackText');
+    const continueButton = document.getElementById('continueButton');
+    const retryButton = document.getElementById('retryButton');
+
+    // Check the video time periodically
+    video.addEventListener('timeupdate', function() {
+        if (video.currentTime >= quizTime && !quizAnswered) {
+            video.pause(); // Pause the video at quiz time
+            displayQuiz();
+        }
+    });
+
+    // Display the quiz overlay
+    function displayQuiz() {
+        quizOverlay.style.display = 'block';
+    }
+
+    // Handle quiz answer and show feedback
+    function submitAnswer(answer) {
+        quizAnswered = true;
+        quizOverlay.style.display = 'none';
+
+        if (answer === 'Paris') {
+            // Correct answer feedback
+            feedbackImage.src = 'https://www.pngarts.com/files/4/Ironman-PNG-High-Quality-Image.png'; // Image for correct answer
+            feedbackText.innerText = 'Correct! Well done.';
+            continueButton.style.display = 'inline';
+            retryButton.style.display = 'none';
+        } else {
+            // Incorrect answer feedback
+            feedbackImage.src = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRBDakuz-sRvd0XUHstrUVxPJjrzbGmerBhuQ&s'; // Image for wrong answer
+            feedbackText.innerText = 'Incorrect! Try again or continue.';
+            continueButton.style.display = 'inline';
+            retryButton.style.display = 'inline';
+        }
+        feedbackOverlay.style.display = 'block';
+    }
+
+    // Resume video playback for correct answer or if the student chooses to continue
+    function continueVideo() {
+        feedbackOverlay.style.display = 'none';
+        video.play();
+    }
+
+    // Retry quiz for incorrect answer
+    function retryQuiz() {
+        feedbackOverlay.style.display = 'none';
+        quizAnswered = false;
+        video.currentTime = 0; // Restart video
+        video.play();
+    }
+</script>
+
+</body>
+</html>
